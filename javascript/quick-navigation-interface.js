@@ -43,13 +43,21 @@
 
 			// Add links on the current page
 			$( 'a' ).each( function() {
-				var title = $( this ).text(),
-					url   = $( this ).attr( 'href' );
+				var parentTitle = '',
+					title       = $( this ).text(),
+					url         = $( this ).attr( 'href' );
+
+				if ( $( this ).parent().parent().hasClass( 'wp-submenu' ) ) {
+					parentTitle = $( this ).parent().parent().parent().find( '.wp-menu-name' ).text();
+				} else if ( 'wp-admin-bar-new-content-default' === $( this ).parent().parent().attr( 'id' ) ) {
+					title = $( '#wp-admin-bar-new-content' ).find( '.ab-label' ).text() + ' ' + title;
+				}
 
 				links.push( new app.Models.Link( {
-					id    : murmurhash3_32_gc( title + url ),
-					title : title,
-					url   : url
+					id          : murmurhash3_32_gc( title + url ),
+					title       : title,
+					parentTitle : parentTitle,
+					url         : url
 				} ) );
 			} );
 
@@ -269,10 +277,11 @@
 	 */
 	app.Models.Link = Backbone.Model.extend( {
 		defaults : {
-			id    : 0,
-			title : '',
-			url   : '',
-			state : 'inactive'
+			id          : 0,
+			title       : '',
+			parentTitle : '',
+			url         : '',
+			state       : 'inactive'
 		}
 	} );
 
